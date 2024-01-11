@@ -50,7 +50,8 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        $student = Student::findOrFail($student->id);
+        return view('students.show', ['student' => $student]);
     }
 
     /**
@@ -58,7 +59,8 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+        $student = Student::findOrFail($student->id);
+        return view('students.edit', ['student' => $student]);
     }
 
     /**
@@ -66,7 +68,17 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255',
+            'address' => 'required|string|max:255',
+            'date_of_birth' => 'required|date',
+        ]);
+
+        Student::whereId($student->id)->update($validatedData);
+
+        return redirect()->route('students.index')->with('success', 'Student updated successfully');
     }
 
     /**
@@ -74,6 +86,9 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+        $student = Student::findOrFail($student->id);
+        $student->delete();
+
+        return redirect()->route('students.index')->with('success', 'Student deleted successfully');
     }
 }
